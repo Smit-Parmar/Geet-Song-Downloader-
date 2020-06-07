@@ -13,26 +13,26 @@ from pathlib import Path
 
 screen = tk.Tk()
 screen.title("Geet")
-screen.geometry("270x140")
+screen.geometry("270x150")
 string = tk.StringVar(screen)
 string2 = tk.StringVar(screen)
+var = tk.IntVar(screen)
 url = ""
 down_pth = ""
 stg = "|"
 driver = ""
 th2 = ""
-checkboxvar=0
 cond = True
 
 def setvar(value,colour = "Black"):
     string.set("")
-    tk.Label(screen,textvariable = string,fg = colour).place(x = 76,y = 42)
+    tk.Label(screen,textvariable = string,fg = colour).place(x = 76,y = 43)
     string.set(value)
-    tk.Label(screen,textvariable = string,fg = colour).place(x = 76,y = 42)
+    tk.Label(screen,textvariable = string,fg = colour).place(x = 76,y = 43)
 
 def set_downstats(value,colour = "Black"):
     string2.set(value)
-    tk.Label(screen,textvariable = string2,fg = colour).place(x = 76,y = 62)
+    tk.Label(screen,textvariable = string2,fg = colour).place(x = 76,y = 64)
 
 def check_download():
     global stg,driver,down_pth,color
@@ -48,16 +48,16 @@ def check_download():
             z = z.replace("{","")
             z = z.replace("}","")
             z = z.strip("'")
-            #print(z)
+            print(z)
             if Path(z).suffix == '.mp3':
                 set_downstats("|"*54+"100%","green")
                 driver.quit()
                 x = 0
                 mb.showinfo("","Download complete")
-                if checkboxvar==1:
+                case = var.get()
+                if case :
                     os.chdir(down_pth)
                     os.startfile(z)
-                    
                 break
             
         x+=1
@@ -66,14 +66,15 @@ def check_download():
             set_downstats(stg,"blue")
             per = str(int(len(stg)/0.54))+"%"
             stg = per.rjust(x,"|")
-            time.sleep(random.uniform(0.1,1.5))
+            time.sleep(random.uniform(0.1,1))
 
 def start_down():
     global url,down_pth,driver,th2,cond
-    path=os.getcwd()
+    set_downstats("Searching song","blue")
+    path = os.getcwd()
     if not down_pth:
         down_pth = path
-        #print(down_pth)
+        print(down_pth)
     Song_name = sn.get()
     Artist_name = an.get()
     if Artist_name != "(Optional)":
@@ -90,10 +91,10 @@ def start_down():
     except:
         cond = False
         set_downstats("Song not found!","red")
-        mb.showwarning("Geet",f"Could not find {Song_name}\nSome time it happens due to slow internet you can try again..")
+        mb.showwarning("MuDow",f"Could not find {Song_name}\nEnter few more lyrics or Artist name")
         return
-    #print(url,down_pth)
-    
+    print(url,down_pth)
+    threading.Thread(target = check_download).start()
     chromeOptions=Options()
     chromeOptions.add_experimental_option("prefs",{"download.default_directory":down_pth})
     chromeOptions.add_argument("--headless")
@@ -112,20 +113,14 @@ def Download():
     cond = True
     threading.Thread(target=start_down).start()
     time.sleep(1)
-    th2 = threading.Thread(target=check_download)
-    th2.start()
     
 def Browse_folder():
     global down_pth
     folder_selected = filedialog.askdirectory()
-    down_pth = folder_selected.replace("/","\\")
-    setvar(down_pth[:35]+"...","green")
-def checkbox():
-    global checkboxvar
-    checkboxvar=v1.get()
+    if folder_selected:
+        down_pth = folder_selected.replace("/","\\")
+        setvar(down_pth[:30]+"...","green")
 
-        
-    
 S_name = tk.Label(screen,text="Song Name").grid(row = 0,column = 0)
 sn = tk.Entry(screen,width = 30)
 sn.grid(row = 0,column = 1)
@@ -133,13 +128,13 @@ A_name = tk.Label(screen,text = "Artist Name").grid(row = 1,column = 0)
 an = tk.Entry(screen,width = 30)
 an.insert("end","(Optional)")
 an.grid(row = 1,column = 1)
-v1=tk.IntVar()
-c1=tk.Checkbutton(screen,text="Play song after download",variable=v1,onvalue=1,offvalue=0, command=checkbox).place(x=30,y=90)
-browse = tk.Button(screen,text = "Browse",command = Browse_folder,width = 7).place(x = 55,y = 110)
-btn = tk.Button(screen,text = "Download",command = Download,width = 7).place(x = 155,y = 110)
+browse = tk.Button(screen,text = "Browse",command = Browse_folder,width = 7).place(x = 55,y = 115)
+btn = tk.Button(screen,text = "Download",command = Download,width = 7).place(x = 155,y = 115)
 tk.Label(screen,text = "Download to: ").grid(row = 2,column = 0)
 tk.Label(screen,text = "Status: ").grid(row = 3,column = 0)
-setvar(os.getcwd(),"blue")
+var.set(1)
+che = tk.Checkbutton(screen,text="Play song after downloading",variable=var).place(x = 5,y = 82)
+setvar(os.getcwd()[:30]+"...","blue")
 set_downstats("None","blue")
 screen.mainloop()
 
