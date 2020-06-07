@@ -53,7 +53,7 @@ def check_download():
                 set_downstats("|"*54+"100%","green")
                 driver.quit()
                 x = 0
-                mb.showinfo("","Download complete")
+                mb.showinfo("Geet","Download complete")
                 case = var.get()
                 if case :
                     os.chdir(down_pth)
@@ -91,7 +91,7 @@ def start_down():
     except:
         cond = False
         set_downstats("Song not found!","red")
-        mb.showwarning("MuDow",f"Could not find {Song_name}\nEnter few more lyrics or Artist name")
+        mb.showwarning("Geet",f"Could not find {Song_name}\nEnter few more lyrics or Artist name")
         return
     print(url,down_pth)
     threading.Thread(target = check_download).start()
